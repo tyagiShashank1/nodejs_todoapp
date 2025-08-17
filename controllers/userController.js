@@ -11,7 +11,7 @@ export const isAuthenticated = async (req, res, next) => {
     if (!req.user) res.json({ message: "Invalid-Login!" });
     next();
   } else {
-    res.json({ message: "Please Login!" });
+     return next(new ErrorHandler("Please Login", 404));
   }
 };
 
@@ -58,7 +58,7 @@ export const loginUser = async (req, res, next) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email: email }).select("+password");
-    if (!user) return next(new ErrorHandler("Please Login First", 404));
+    if (!user) return next(new ErrorHandler("Please Register First", 404));
     const passwordMatch = await bcrypt.compare(password, user.password);
     if (passwordMatch) {
       const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
@@ -69,13 +69,11 @@ export const loginUser = async (req, res, next) => {
       });
       res.json({
         success: true,
-        message: "Post Login route passed",
+        message: "Login Successful",
         redirectTo: "/",
       });
     } else {
-      res.json({
-        message: "User does not exist. Please Sign Up.",
-      });
+      return next(new ErrorHandler("Invalid Credentials", 404));
     }
   } catch (error) {
     next(error);
@@ -87,7 +85,7 @@ export const logoutUser = async (req, res,next) => {
     const { Access_Token } = req.cookies;
     if (!Access_Token) res.json({ message: "Already Logged Out" });
     else {
-      res.clearCookie("Access_Token", token, {
+      res.clearCookie("Access_Token", Access_Token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",

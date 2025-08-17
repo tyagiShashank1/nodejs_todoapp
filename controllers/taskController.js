@@ -2,7 +2,7 @@ import ErrorHandler from "../middlewares/error.js";
 import { Task } from "../models/taskModel.js";
 
 //get all tasks
-export const getAllTasks = async (req, res,next) => {
+export const getAllTasks = async (req,res,next) => {
   try {
     const tasks = await Task.find({ user: req.user });
   res.json({ message: "Tasks fetched successfully", tasks });
