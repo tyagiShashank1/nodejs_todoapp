@@ -87,7 +87,11 @@ export const logoutUser = async (req, res) => {
     const { Access_Token } = req.cookies;
     if (!Access_Token) res.json({ message: "Already Logged Out" });
     else {
-      res.clearCookie("Access_Token");
+      res.clearCookie("Access_Token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      });
       res.json({ message: "Logged Out Successfully" });
     }
   } catch (error) {
