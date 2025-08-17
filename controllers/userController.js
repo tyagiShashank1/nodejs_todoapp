@@ -82,7 +82,7 @@ export const loginUser = async (req, res, next) => {
   }
 };
 
-export const logoutUser = async (req, res) => {
+export const logoutUser = async (req, res,next) => {
   try {
     const { Access_Token } = req.cookies;
     if (!Access_Token) res.json({ message: "Already Logged Out" });
